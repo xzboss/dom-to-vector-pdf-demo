@@ -67,7 +67,7 @@ export const ExportToPDF = (id, title = "byExport") => {
       fontStyle: "normal",
     },
   ]);
-  vectorInstance.export({
+  vectorInstance.exportPDF({
     id,
     filename: title,
   });
