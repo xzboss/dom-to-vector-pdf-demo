@@ -3,7 +3,7 @@ import cors from 'cors';
 import puppeteer from 'puppeteer';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3003;
 
 // 中间件
 app.use(cors());
@@ -49,22 +49,33 @@ app.post('/api/export-pdf', async (req, res) => {
       throw new Error('无法获取报告高度，请确认元素是否可见');
     }
 
-    // 添加打印样式
+    // 添加打印样式 - 需要根据项目完善
     await page.addStyleTag({
       content: `
         @page {
           size: auto;
-          height: ${elementHeight + 10}px;
+          height: ${elementHeight}px;
           margin: 0;
         }
+        
+        /* 隐藏所有元素 */
+        body * {
+          visibility: hidden !important;
+        }
+        
+        /* 显示目标元素及其所有子元素 */
+        ${elementId},
+        ${elementId} * {
+          visibility: visible !important;
+          z-index: 100000 !important;
+        }
+        
+        /* 重置目标元素样式但保持原有布局 */
         ${elementId} {
-          position: absolute !important;
-          width: 100% !important;
+          position: fixed !important;
           top: 0 !important;
           left: 0 !important;
           right: 0 !important;
-          background-color: #fff !important;
-          z-index: 100000 !important;
         }
       `
     });
@@ -72,8 +83,10 @@ app.post('/api/export-pdf', async (req, res) => {
     // 生成PDF Buffer
     const pdfBuffer = await page.pdf({
       printBackground: true,
-      height: `${elementHeight + 10}px`,
-      pageRanges: '1'
+      height: `${elementHeight + 20}px`,
+      width: '210mm', // A4宽度，可根据需要调整
+      pageRanges: '1',
+      preferCSSPageSize: true
     });
 
     await browser.close();

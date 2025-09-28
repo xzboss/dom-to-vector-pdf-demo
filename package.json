@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "start": "pm2 delete all || true && pm2 start vite --name frontend && pm2 start puppeteerTest.js --name backend",
+    "end": "pm2 stop frontend && pm2 stop backend",
+    "restart": "pm2 restart all || pm2 start vite --name frontend && pm2 start puppeteerTest.js --name backend",
+    "status": "pm2 status"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",

@@ -67,7 +67,7 @@ export const ExportToPDF = (id, title = "byExport") => {
       fontStyle: "normal",
     },
   ]);
-  vectorInstance.exportPDF({
+  return vectorInstance.exportPDF({
     id,
     filename: title,
   });
@@ -268,3 +268,29 @@ export const ExportToPDF = (id, title = "byExport") => {
 //   const expectedSize = 16; // 1em 通常计算的像素值
 //   return expectedSize / width;
 // };
+
+export const exportToPDFByPuppeteer = async (
+  id,
+  url = window.location.href
+) => {
+  const elementId = id;
+  try {
+    const response = await fetch(`http://localhost:3003/api/export-pdf`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url, elementId }),
+    });
+    const pdfBuffer = await response.blob();
+    const pdfUrl = URL.createObjectURL(pdfBuffer);
+    const a = document.createElement("a");
+    a.href = pdfUrl;
+    a.download = "byPuppeteer";
+    a.click();
+    URL.revokeObjectURL(pdfUrl);
+    a.remove();
+  } catch (error) {
+    console.error(error);
+  }
+};

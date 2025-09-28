@@ -2,11 +2,14 @@
 import { ref, onMounted } from "vue";
 import * as echarts from "echarts";
 import { Printer, Download } from "@element-plus/icons-vue";
-import { PrintPDF, ExportToPDF } from "./utils";
+import { PrintPDF, ExportToPDF, exportToPDFByPuppeteer } from "./utils";
 
 const mainContent = ref(null);
 const svgChart = ref(null);
 const canvasChart = ref(null);
+const puppeteerUrl = ref("http://localhost:3009");
+const puppeteerDomId = ref("#PDF_DOM");
+const loading = ref(false);
 
 // Initialize ECharts
 onMounted(() => {
@@ -64,7 +67,32 @@ const printPDF = () => {
 
 // Export to PDF function
 const exportToPDF = async () => {
-  ExportToPDF("#PDF_DOM");
+  if (loading.value) return;
+  loading.value = true;
+
+  try {
+    await ExportToPDF("#PDF_DOM");
+    loading.value = false;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Puppeteer export to PDF function
+const _exportToPDFByPuppeteer = async () => {
+  if (loading.value) return;
+  loading.value = true;
+
+  try {
+    await exportToPDFByPuppeteer(puppeteerDomId.value, puppeteerUrl.value);
+    loading.value = false;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loading.value = false;
+  }
 };
 </script>
 
@@ -79,10 +107,36 @@ const exportToPDF = async () => {
           <el-icon><Printer /></el-icon>
           打印PDF
         </el-button>
-        <el-button type="success" @click="exportToPDF">
+        <el-button type="success" @click="exportToPDF" :loading="loading">
           <el-icon><Download /></el-icon>
           导出PDF
         </el-button>
+        <!-- Puppeteer导出PDF - 下拉形式 -->
+        <div class="puppeteer-dropdown">
+          <el-button
+            type="danger"
+            @click="_exportToPDFByPuppeteer"
+            :loading="loading"
+            class="dropdown-trigger"
+          >
+            <el-icon><Download /></el-icon>
+            Puppeteer导出PDF
+          </el-button>
+          <div class="dropdown-content">
+            <div class="dropdown-inputs">
+              <el-input
+                v-model="puppeteerUrl"
+                placeholder="导出页面url"
+                size="small"
+              />
+              <el-input
+                v-model="puppeteerDomId"
+                placeholder="导出页面DOM ID"
+                size="small"
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </el-header>
 
@@ -103,7 +157,7 @@ const exportToPDF = async () => {
       <el-main class="main" ref="mainContent">
         <div class="content-wrapper" id="PDF_DOM">
           <!-- Headings -->
-          <section class="section">
+          <section class="section" id="PDF_DOM_HEADINGS">
             <h1 class="heading-1">Heading 1 - Large Title</h1>
             <h2 class="heading-2">Heading 2 - Subtitle</h2>
             <h3 class="heading-3">Heading 3 - Section Title</h3>
@@ -112,14 +166,14 @@ const exportToPDF = async () => {
           </section>
 
           <!-- 中文 -->
-          <section class="section">
+          <section class="section" id="PDF_DOM_ZH">
             <h1 class="zh-400">中简-400字重</h1>
             <h2 class="zh-500">中简-500字重</h2>
             <h3 class="zh-700">中简-700字重</h3>
           </section>
 
           <!-- Different Font Styles -->
-          <section class="section">
+          <section class="section" id="PDF_DOM_FONT_STYLES">
             <h3>Font Styles</h3>
             <div class="font-styles">
               <p class="font-serif">Serif Font Style</p>
@@ -129,7 +183,7 @@ const exportToPDF = async () => {
           </section>
 
           <!-- Different Font Sizes -->
-          <section class="section">
+          <section class="section" id="PDF_DOM_FONT_SIZES">
             <h3>Font Sizes</h3>
             <div class="font-sizes">
               <p class="text-xs">Extra Small Text</p>
@@ -141,7 +195,7 @@ const exportToPDF = async () => {
           </section>
 
           <!-- Different Colors -->
-          <section class="section">
+          <section class="section" id="PDF_DOM_TEXT_COLORS">
             <h3>Text Colors</h3>
             <div class="text-colors">
               <p class="text-red">Red Text</p>
@@ -152,7 +206,7 @@ const exportToPDF = async () => {
           </section>
 
           <!-- iconfont -->
-          <section class="section">
+          <section class="section" id="PDF_DOM_ICONFONT">
             <h3>Iconfont</h3>
             <div class="iconfont-container">
               <svg class="iconfont-svg">
@@ -162,7 +216,7 @@ const exportToPDF = async () => {
           </section>
 
           <!-- Backgrounds -->
-          <section class="section">
+          <section class="section" id="PDF_DOM_BACKGROUNDS">
             <h3>Backgrounds</h3>
             <div class="backgrounds">
               <div class="bg-gradient">Gradient Background</div>
@@ -172,7 +226,7 @@ const exportToPDF = async () => {
           </section>
 
           <!-- ECharts Examples -->
-          <section class="section">
+          <section class="section" id="PDF_DOM_CHARTS">
             <h3>Charts</h3>
             <div class="charts-container">
               <div ref="svgChart" class="chart"></div>
@@ -181,7 +235,7 @@ const exportToPDF = async () => {
           </section>
 
           <!-- Images -->
-          <section class="section">
+          <section class="section" id="PDF_DOM_IMAGES">
             <h3>Images</h3>
             <div class="images-container">
               <img src="/1.jpg" alt="Nature Image 1" />
@@ -312,7 +366,7 @@ const exportToPDF = async () => {
   flex-direction: column;
   gap: 10px;
 }
-.font-serif {
+/* .font-serif {
   font-family: Georgia, serif;
 }
 .font-sans {
@@ -320,7 +374,7 @@ const exportToPDF = async () => {
 }
 .font-mono {
   font-family: "Courier New", monospace;
-}
+} */
 
 /* Font Sizes */
 .font-sizes {
@@ -446,5 +500,45 @@ const exportToPDF = async () => {
 .iconfont-svg:hover {
   color: #67c23a;
   transform: scale(1.2);
+}
+
+/* Puppeteer下拉样式 */
+.puppeteer-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  min-width: 280px;
+}
+
+.puppeteer-dropdown:hover .dropdown-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-inputs {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dropdown-trigger {
+  width: 100%;
 }
 </style>
