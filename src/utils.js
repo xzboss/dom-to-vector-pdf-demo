@@ -276,16 +276,13 @@ export const exportToPDFByPuppeteer = async (
 ) => {
   const elementId = id;
   try {
-    const response = await fetch(
-      `${window.location.protocol}//${window.location.host}/${API_PORT}/api/export-pdf`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url, elementId }),
-      }
-    );
+    const response = await fetch("/api/export-pdf", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url, elementId }),
+    });
     const pdfBuffer = await response.blob();
     const pdfUrl = URL.createObjectURL(pdfBuffer);
     const a = document.createElement("a");

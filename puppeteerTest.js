@@ -4,7 +4,6 @@ import puppeteer from 'puppeteer';
 import { API_PORT } from './config.js';
 
 const app = express();
-const PORT = process.env.PORT || API_PORT;
 
 // 中间件
 app.use(cors());
@@ -101,6 +100,6 @@ app.post('/api/export-pdf', async (req, res) => {
 });
 
 // 启动服务
-app.listen(PORT, () => {
-  console.log(`PDF导出服务已启动，端口: ${PORT}`);
+app.listen(API_PORT, () => {
+  console.log(`PDF导出服务已启动，端口: ${API_PORT}`);
 });

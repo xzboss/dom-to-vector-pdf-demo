@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import vue from "@vitejs/plugin-vue";
-import { PORT } from "./config";
+import { API_PORT, PORT } from "./config";
 
 // https://vite.dev/config/
 const root = process.cwd();
@@ -12,6 +12,13 @@ export default defineConfig({
   server: {
     port: PORT,
     strictPort: true,
+    proxy: {
+      "/api": {
+        target: `http://localhost:${API_PORT}`,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, "/api"),
+      },
+    },
   },
   resolve: {
     alias: {
