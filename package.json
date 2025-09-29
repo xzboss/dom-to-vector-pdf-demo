@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"node puppeteerTest.js\" \"vite\"",
     "start": "pm2 delete all || true && pm2 start vite --name frontend && pm2 start puppeteerTest.js --name backend",
     "end": "pm2 stop frontend && pm2 stop backend",
     "restart": "pm2 restart all || pm2 start vite --name frontend && pm2 start puppeteerTest.js --name backend",

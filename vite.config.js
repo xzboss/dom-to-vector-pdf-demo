@@ -10,8 +10,8 @@ export default defineConfig({
   root,
   plugins: [vue()],
   server: {
-    port: PORT, // 设置你想要的端口号
-    strictPort: true, // 如果端口被占用则退出，而不是尝试下一个可用端口
+    port: PORT,
+    strictPort: true,
   },
   resolve: {
     alias: {
