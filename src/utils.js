@@ -277,7 +277,7 @@ export const exportToPDFByPuppeteer = async (
   const elementId = id;
   try {
     const response = await fetch(
-      `${window.location.href}${API_PORT}/api/export-pdf`,
+      `${window.location.protocol}//${window.location.host}/${API_PORT}/api/export-pdf`,
       {
         method: "POST",
         headers: {
