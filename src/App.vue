@@ -3,11 +3,12 @@ import { ref, onMounted } from "vue";
 import * as echarts from "echarts";
 import { Printer, Download } from "@element-plus/icons-vue";
 import { PrintPDF, ExportToPDF, exportToPDFByPuppeteer } from "./utils";
+import { PORT } from "../config";
 
 const mainContent = ref(null);
 const svgChart = ref(null);
 const canvasChart = ref(null);
-const puppeteerUrl = ref("http://localhost:3009");
+const puppeteerUrl = ref(`http://localhost:${PORT}`);
 const puppeteerDomId = ref("#PDF_DOM");
 const loading = ref(false);
 

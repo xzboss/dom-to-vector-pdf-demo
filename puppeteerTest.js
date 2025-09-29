@@ -1,9 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import puppeteer from 'puppeteer';
+import { API_PORT } from './config.js';
 
 const app = express();
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || API_PORT;
 
 // 中间件
 app.use(cors());
@@ -19,9 +20,6 @@ app.post('/api/export-pdf', async (req, res) => {
       return res.status(400).json({ error: '缺少 url 或 elementId 参数' });
     }
 
-    // 生成随机文件名
-    const outputPath = `pdfs/export_${Date.now()}.pdf`;
-    
     const browser = await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox']

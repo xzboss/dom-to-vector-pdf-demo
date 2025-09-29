@@ -5,6 +5,7 @@ import { svg2pdf } from "svg2pdf.js";
 import PingFangRegular from "@/assets/PingFang Regular_0.subset.ttf";
 import PingFangMedium from "@/assets/PingFang Medium_0.subset.ttf";
 import PingFangHeavy from "@/assets/PingFang Heavy_0.subset.ttf";
+import { API_PORT } from "../config";
 
 export const PrintPDF = (id, title = "byPrint") => {
   const reportElement = document.getElementById(id);
@@ -275,13 +276,16 @@ export const exportToPDFByPuppeteer = async (
 ) => {
   const elementId = id;
   try {
-    const response = await fetch(`http://localhost:3003/api/export-pdf`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ url, elementId }),
-    });
+    const response = await fetch(
+      `http://localhost:${API_PORT}/api/export-pdf`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url, elementId }),
+      }
+    );
     const pdfBuffer = await response.blob();
     const pdfUrl = URL.createObjectURL(pdfBuffer);
     const a = document.createElement("a");
