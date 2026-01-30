@@ -69,7 +69,7 @@ export const ExportToPDF = (id, title = "byExport") => {
     },
   ]);
   return vectorInstance.exportPDF({
-    id,
+    selector: id,
     filename: title,
   });
 };

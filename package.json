@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"node puppeteerTest.js\" \"vite\"",
+    "dev": "vite --port 3003",
     "start": "pm2 delete all || true && pm2 start vite --name frontend && pm2 start puppeteerTest.js --name backend",
     "end": "pm2 stop frontend && pm2 stop backend",
     "restart": "pm2 restart all || pm2 start vite --name frontend && pm2 start puppeteerTest.js --name backend",
@@ -14,7 +14,7 @@
     "@element-plus/icons-vue": "^2.3.1",
     "cors": "^2.8.5",
     "dom-to-svg": "^0.1.0",
-    "dom-to-vector-pdf": "^0.0.3",
+    "dom-to-vector-pdf": "^1.0.1",
     "echarts": "^5.5.0",
     "element-plus": "^2.5.6",
     "express": "^5.1.0",
